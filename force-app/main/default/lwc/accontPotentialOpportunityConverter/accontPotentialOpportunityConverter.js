@@ -70,7 +70,7 @@ export default class AccontPotentialOpportunityConverter extends LightningElemen
       }
 
       handleConvertionRequest() {
- 
+         console.log('Convertion Button');
         if (this.recordsCount == 0) {
           console.log("Selected Line Count is 0 -->", this.recordsCount);
           this.dispatchEvent(
