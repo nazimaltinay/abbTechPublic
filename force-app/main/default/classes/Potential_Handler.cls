@@ -1,7 +1,7 @@
 public with sharing class Potential_Handler {
  
     public class localException extends Exception{}
-    
+
     @AuraEnabled
      public static void ConvertPotentialToOpportunity(string accountId)
     {
@@ -19,6 +19,16 @@ public with sharing class Potential_Handler {
             prodIds.add(ptnsl.Product__r.Id);
         }
 
+        //Get related pricebook entries.
+        //map list according to product Id. It will be inside iteration.
+        //Keep safe against governor limit
+        List<PricebookEntry> pbeS = [SELECT Pricebook2Id, Product2Id, UnitPrice, IsActive, Id  FROM PricebookEntry where IsActive = true and Pricebook2Id = : priceBookId and Product2Id in :prodIds];
+        Map<string, PricebookEntry> pbEntrieS  = new Map<String, PricebookEntry>();
+        for(PricebookEntry pbE: pbeS)
+        { 
+            pbEntrieS.put(pbe.Product2Id, pbe);
+        }
+
         //Insert Opportunity.
         //Set mandatory fields.
         Opportunity opp = new Opportunity();
@@ -34,17 +44,8 @@ public with sharing class Potential_Handler {
             throw new localException ('Opportunity could not be created. Reason is : '+ex.getMessage() );
         }
         
-        //Get related pricebook entries.
-        //map list according to product Id. It will be inside iteration.
-        //Keep safe against governor limit
-        List<PricebookEntry> pbeS = [SELECT Pricebook2Id, Product2Id, UnitPrice, IsActive, Id  FROM PricebookEntry where IsActive = true and Pricebook2Id = : priceBookId and Product2Id in :prodIds];
-        Map<string, PricebookEntry> pbEntrieS  = new Map<String, PricebookEntry>();
-        for(PricebookEntry pbE: pbeS)
-        { 
-            pbEntrieS.put(pbe.Product2Id, pbe);
-        }
 
-        //Create Opportunity lines.
+        //Create Opportunity lines. Opportunity Line Item is related with Potential record on Related_Potential__c.
         //Throw error message incase of any product doesn't have price book entry. 
         List<OpportunityLineItem> oppLines = new List<OpportunityLineItem>();
         for(Potential__c ptnsl: ptnslS )
