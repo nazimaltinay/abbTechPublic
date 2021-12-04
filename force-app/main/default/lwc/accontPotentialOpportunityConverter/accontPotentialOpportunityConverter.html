@@ -1,0 +1,20 @@
+<template>
+    <lightning-card title="Potential List" icon-name="standard:product">
+        <section>
+            <div>
+                <lightning-button label="Convert" set column-widths-mode="auto" icon-name="utility:connected_apps" onclick={handleConvertionRequest}  ></lightning-button>
+            </div>
+            <div style="height: 400px;">
+            <lightning-datatable 
+                key-field="Id" 
+                data={potentialList} 
+                columns={columns} 
+                column-widths-mode="Auto"
+                wrap-text-max-lines="3"
+                onrowselection={getSelectedRecords}
+                >
+            </lightning-datatable>
+            </div>
+        </section>
+    </lightning-card>
+</template>

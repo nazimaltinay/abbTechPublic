@@ -1,0 +1,19 @@
+<template>
+    <lightning-card title="Potential List" icon-name="standard:product">
+        <section>
+            <div>
+ 
+            </div>
+            <div style="height: 600px;">
+                <lightning-datatable
+                key-field="Id" 
+                data={potentialList} 
+                set column-widths-mode="auto"
+                columns={columns}
+                errors={errors}                
+            >
+            </lightning-datatable>
+            </div>
+        </section>
+    </lightning-card>
+</template>

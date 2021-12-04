@@ -66,5 +66,4 @@ public with sharing class Potential_Handler {
         Pricebook2  stdPriceBook    = [select id, name from Pricebook2 where isStandard = true limit 1];
         return stdPriceBook.Id;    
     }
- 
 }

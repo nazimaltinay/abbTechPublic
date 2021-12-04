@@ -43,7 +43,6 @@ public with sharing class Potential_Handler_Test {
 
         List<OpportunityLineItem> opplines = [Select Id, ProductCode from OpportunityLineItem where ProductCode = 'Pro-001'];
         Integer actValue = opplines.size();
-
         system.assertEquals(250, actValue);
 
     }
