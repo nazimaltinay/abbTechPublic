@@ -1,5 +1,11 @@
 import { LightningElement, wire, api, track } from "lwc";
+import { refreshApex } from "@salesforce/apex";
+import { getPicklistValues } from 'lightning/uiObjectInfoApi';
+import { getObjectInfo } from 'lightning/uiObjectInfoApi';
+import PRODUCT_OBJECT from '@salesforce/schema/Product2';
+import Family_FIELD from '@salesforce/schema/Product2.Family';
 import  getPotentialList  from "@salesforce/apex/PotentialController.getPotentialList";
+import  getPriceListNames  from "@salesforce/apex/PotentialController.getPriceListNames";
 
 const columns = [
             {
@@ -9,7 +15,7 @@ const columns = [
             },
           {
             label: "Product Name",
-            fieldName: "Product__r.Name",
+            fieldName: "Productname",
             type: "text"
           },
           {
@@ -38,21 +44,34 @@ export default class AccontPotentialOpportunityConverter extends LightningElemen
     columns = columns;
     selectedRecords = [];
     @track recordsCount
+    @track pricelistsvalues;
+    xfamily;
+    xpricebook;
 
-    @wire(getPotentialList, {recordId: "$recordId"}) 
+    @wire(getPotentialList, {recordId: "$recordId", pricebookName:'$xpricebook', productFamily :'$xfamily'}) 
     potentials({ 
         error, 
         data 
     }) {
+          console.log('get values.');
           if(data)
           {
-            this.potentialList = data;
+
+            this.potentialList = data.map(row=>{ 
+              return{...row, Productname:row.Product__r.Name}
+            });
+            console.log('Potential List-->'+this.potentialList  );
+            /*
+            */
           } else if(error)
           {
-            this.error = error;
             console.log('error -->'+ error );
+            this.error = error;
+
           }
       }
+
+
       getSelectedRecords(event) {
         // getting selected rows
         const selectedRows = event.detail.selectedRows;
@@ -103,5 +122,36 @@ export default class AccontPotentialOpportunityConverter extends LightningElemen
       }
       submitCreate() {
 
+      }
+      @wire(getObjectInfo, { objectApiName: PRODUCT_OBJECT })
+      objectInfo;
+      
+      @wire(getPicklistValues, { recordTypeId: '$objectInfo.data.defaultRecordTypeId', fieldApiName: Family_FIELD})
+      FamilyFieldPicklistValues;
+      
+      /// Get values from page
+      handleChange(event) {
+        const field = event.target.name;
+        if (field === "productfamily") {
+          this.xfamily= event.target.value;
+        } else if(field === "pricebookName")
+        {
+          this.xpricebook =  event.target.value;
+        }
+        refreshApex(this.potentialList );
+      } 
+
+      /// # Price lists
+      @wire(getPriceListNames) priceBooks;
+      get pricebookValues()
+      {
+        var returnOptions = [];
+        if(this.priceBooks.data){
+            this.priceBooks.data.forEach(ele =>{
+                returnOptions.push({label:ele.Name , value:ele.Name});
+            }); 
+        }
+        console.log(JSON.stringify(returnOptions));
+        return returnOptions;
       }
 }

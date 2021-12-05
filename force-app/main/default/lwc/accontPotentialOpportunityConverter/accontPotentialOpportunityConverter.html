@@ -1,8 +1,28 @@
 <template>
-    <lightning-card title="Potential List" icon-name="standard:product">
+    <lightning-card title="Potential List V04" icon-name="standard:product">
         <section>
             <div>
                 <lightning-button label="Convert" set column-widths-mode="auto" icon-name="utility:connected_apps" onclick={handleConvertionRequest}  ></lightning-button>
+                <template if:true={FamilyFieldPicklistValues.data}>
+                    <lightning-combobox name="productfamily"
+                        label="Product Family"
+                        value={value}
+                        placeholder="-Select-"
+                        options={FamilyFieldPicklistValues.data.values}
+                        onchange={handleChange} 
+                        class="slds-size_1-of-2">
+                    </lightning-combobox>
+                </template>
+                <template if:true={priceBooks.data}> 
+                    <lightning-combobox name="pricebookName"
+                        label="Price Book"
+                        value={value}
+                        placeholder="-Select-"
+                        options={pricebookValues}
+                        onchange={handleChange} 
+                        class="slds-size_1-of-2">
+                    </lightning-combobox>
+                </template>
             </div>
             <div style="height: 400px;">
             <lightning-datatable 

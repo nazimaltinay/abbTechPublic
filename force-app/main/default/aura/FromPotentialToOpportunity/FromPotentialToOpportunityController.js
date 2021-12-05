@@ -4,7 +4,9 @@
             var pAction = component.get("c.ConvertPotentialToOpportunity");
             var recId = component.get("v.recordId") ;
             pAction.setParams({ accountId: recId });
+            
             pAction.setCallback(this, function(pCallback){
+                    console.log('##State--->'+pCallback);
                     if(pCallback.getState() === "SUCCESS"){
  
                         console.log("###### SUCCESS");
@@ -13,9 +15,11 @@
                         toastEvent.setParams({
                             message: 'Potential(s) are converted to opportunity',
                             type:'success',
+                            mode:'sticky'
                         });
                         toastEvent.fire();
-
+                        console.log("###### SUCCESS");
+                        $A.get("e.force:closeQuickAction").fire() 
                     } else
                     {
                         var errors = pCallback.getError();
@@ -29,11 +33,12 @@
                             mode:'sticky'
                         });
                         toastEvent.fire();
+                        $A.get("e.force:closeQuickAction").fire() 
                     }
             	}
             ) //Set call back
             $A.enqueueAction(pAction);
-            $A.get("e.force:closeQuickAction").fire() 
+            
         
     }
     
